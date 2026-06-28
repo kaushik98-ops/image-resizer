@@ -17,7 +17,7 @@ pipeline {
         stage('Unit Test') {
             steps {
                 bat 'pip install -r app/requirements.txt'
-                bat 'pytest app/tests/'
+                bat 'python -m pytest app/tests/'
             }
         }
 
