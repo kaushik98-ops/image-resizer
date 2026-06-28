@@ -46,22 +46,32 @@ pipeline {
 
         stage('Docker Build & Push') {
             steps {
-                script {
-                    bat "aws ecr get-login-password --region %AWS_REGION% | docker login --username AWS --password-stdin %ECR_REPO%"
-                    bat "docker build -t %ECR_REPO%:%IMAGE_TAG% ./app"
-                    bat "docker push %ECR_REPO%:%IMAGE_TAG%"
+                withCredentials([aws(credentialsId: 'aws-credentials', 
+                            accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
+                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    script {
+                        bat "aws ecr get-login-password --region %AWS_REGION% | docker login --username AWS --password-stdin %ECR_REPO%"
+                        bat "docker build -t %ECR_REPO%:%IMAGE_TAG% ./app"
+                        bat "docker push %ECR_REPO%:%IMAGE_TAG%"
+                    }
                 }
             }
         }
+    }
+}
 
         stage('Terraform Deploy') {
             steps {
-                dir('terraform') {
-                    bat 'terraform init'
-                    bat "terraform apply -auto-approve -var=\"ecr_image_uri=%ECR_REPO%:%IMAGE_TAG%\""
-                }
+                withCredentials([aws(credentialsId: 'aws-credentials',
+                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    dir('terraform') {
+                        bat 'terraform init'
+                        bat "terraform apply -auto-approve -var=\"ecr_image_uri=%ECR_REPO%:%IMAGE_TAG%\""
             }
         }
+    }
+}
     }
 
     post {
