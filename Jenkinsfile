@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         AWS_REGION = 'ap-south-1'
-        ECR_REPO = '' // Will be set after terraform
+        ECR_REPO = '848269788405.dkr.ecr.ap-south-1.amazonaws.com/image-resizer-lambda' // Will be set after terraform
         IMAGE_TAG = "v1.${BUILD_NUMBER}"
         SONARQUBE_ENV = 'SonarQube' // Name of SonarQube server in Jenkins
     }
