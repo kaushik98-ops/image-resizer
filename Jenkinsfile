@@ -16,9 +16,9 @@ pipeline {
 
         stage('Unit Test') {
             steps {
-                bat 'C:\\Program Files\\Python310\\python.exe -m pip install pytest'
-                bat 'C:\\Program Files\\Python310\\python.exe -m pip install -r app/requirements.txt'
-                bat 'C:\\Program Files\\Python310\\python.exe -m pytest app/tests/'
+                bat '"C:\\Program Files\\Python310\\python.exe" -m pip install pytest'
+                bat '"C:\\Program Files\\Python310\\python.exe" -m pip install -r app/requirements.txt'
+                bat '"C:\\Program Files\\Python310\\python.exe" -m pytest app/tests/'
     }
 }
 
