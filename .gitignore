@@ -1,0 +1,13 @@
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.backup
+terraform.tfvars
+**/.terraform/
+
+# Docker
+*.tar
+
+# OS
+.DS_Store
