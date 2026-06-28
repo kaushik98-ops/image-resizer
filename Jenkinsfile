@@ -68,10 +68,12 @@ pipeline {
                     dir('terraform') {
                         bat 'terraform init'
                         bat "terraform apply -auto-approve -var=\"ecr_image_uri=%ECR_REPO%:%IMAGE_TAG%\""
+                        }
+                    }
+                }
             }
         }
     }
-}
     
 
     post {
