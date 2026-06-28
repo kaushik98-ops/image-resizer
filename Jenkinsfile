@@ -25,10 +25,13 @@ pipeline {
         stage('SonarQube SAST') {
             steps {
                 withSonarQubeEnv(SONARQUBE_ENV) {
-                    bat 'sonar-scanner -Dsonar.projectKey=image-resizer -Dsonar.sources=app'
-                }
+                    script {
+                        def scannerHome = tool 'SonarQube Scanner'
+                        bat "\"${scannerHome}\\bin\\sonar-scanner.bat\" -Dsonar.projectKey=image-resizer -Dsonar.sources=app"
             }
         }
+    }
+}
 
         stage('Get ECR Repo') {
             steps {
