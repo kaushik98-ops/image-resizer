@@ -7,6 +7,14 @@ terraform {
   }
 }
 
+terraform {
+  backend "s3" {
+    bucket = "image-resizer-tfstate-848269788405"
+    key    = "image-resizer/terraform.tfstate"
+    region = "ap-south-1"
+  }
+}
+
 provider "aws" {
   region = var.aws_region
 }
