@@ -19,8 +19,8 @@ pipeline {
                 bat '"C:\\Program Files\\Python310\\python.exe" -m pip install pytest'
                 bat '"C:\\Program Files\\Python310\\python.exe" -m pip install -r app/requirements.txt'
                 bat '"C:\\Program Files\\Python310\\python.exe" -m pytest app/tests/'
-    }
-}
+            }
+        }
 
         stage('SonarQube SAST') {
             steps {
@@ -28,10 +28,10 @@ pipeline {
                     script {
                         def scannerHome = tool 'SonarQube Scanner'
                         bat "\"${scannerHome}\\bin\\sonar-scanner.bat\" -Dsonar.projectKey=image-resizer -Dsonar.sources=app"
+                    }
+                }
             }
         }
-    }
-}
 
         stage('Get ECR Repo') {
             steps {
@@ -46,9 +46,9 @@ pipeline {
 
         stage('Docker Build & Push') {
             steps {
-                withCredentials([aws(credentialsId: 'aws-credentials', 
-                            accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
-                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                withCredentials([aws(credentialsId: 'aws-credentials',
+                                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                     script {
                         bat "aws ecr get-login-password --region %AWS_REGION% | docker login --username AWS --password-stdin %ECR_REPO%"
                         bat "docker build -t %ECR_REPO%:%IMAGE_TAG% ./app"
@@ -57,27 +57,24 @@ pipeline {
                 }
             }
         }
-    }
-}
 
         stage('Terraform Deploy') {
             steps {
                 withCredentials([aws(credentialsId: 'aws-credentials',
-                            accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-                            secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                     dir('terraform') {
                         bat 'terraform init'
                         bat "terraform apply -auto-approve -var=\"ecr_image_uri=%ECR_REPO%:%IMAGE_TAG%\""
-                        }
                     }
                 }
             }
         }
     }
-    
 
     post {
         always {
             cleanWs()
         }
     }
+}
