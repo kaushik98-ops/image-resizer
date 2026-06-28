@@ -33,17 +33,6 @@ pipeline {
             }
         }
 
-        stage('Get ECR Repo') {
-            steps {
-                script {
-                    ECR_REPO = bat(
-                        script: 'terraform -chdir=terraform output -raw ecr_repo_url',
-                        returnStdout: true
-                    ).trim().readLines().last()
-                }
-            }
-        }
-
         stage('Docker Build & Push') {
             steps {
                 withCredentials([aws(credentialsId: 'aws-credentials',
@@ -64,7 +53,7 @@ pipeline {
                                     accessKeyVariable: 'AWS_ACCESS_KEY_ID',
                                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                     dir('terraform') {
-                        bat 'terraform init'
+                        bat 'terraform init -reconfigure'
                         bat "terraform apply -auto-approve -var=\"ecr_image_uri=%ECR_REPO%:%IMAGE_TAG%\""
                     }
                 }
